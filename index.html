@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing & Incident Response | Jose Ignacio Navarro</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0d1117; --card: #161b22; --accent: #f85149; /* Rojo para alerta/phishing */
+            --accent2: #58a6ff; --text: #c9d1d9; --muted: #8b949e; --border: #30363d;
+            --success: #3fb950; --warning: #d29922;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; line-height: 1.6; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 2rem; }
+        
+        header { padding: 5rem 0; text-align: center; border-bottom: 1px solid var(--border); }
+        .badge { display: inline-block; padding: 0.3rem 1rem; background: rgba(248, 81, 73, 0.1); color: var(--accent); border-radius: 20px; font-size: 0.8rem; font-weight: 800; margin-bottom: 1rem; border: 1px solid var(--accent); }
+        h1 { font-size: 2.8rem; font-weight: 800; letter-spacing: -1px; }
+        
+        section { padding: 4rem 0; border-bottom: 1px solid var(--border); }
+        h2 { font-size: 2rem; margin-bottom: 2rem; color: var(--accent2); display: flex; align-items: center; gap: 10px; }
+        h3 { margin: 1.5rem 0; color: #fff; }
+
+        /* Estilo de Pasos Paso a Paso */
+        .step-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+        .step-header { display: flex; align-items: center; gap: 15px; margin-bottom: 1rem; }
+        .num { background: var(--accent); color: #fff; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+        
+        /* Tabla Comparativa */
+        .compare-table { width: 100%; border-collapse: collapse; margin: 2rem 0; background: #000; border-radius: 8px; overflow: hidden; }
+        .compare-table th, .compare-table td { padding: 1rem; border: 1px solid var(--border); text-align: left; font-size: 0.9rem; }
+        .compare-table th { background: var(--card); color: var(--accent2); }
+
+        /* Consola / Logs */
+        pre { background: #000; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent2); overflow-x: auto; margin: 1rem 0; }
+        code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #d1d1d1; }
+        .log-note { font-size: 0.8rem; color: var(--warning); margin-top: 0.5rem; display: block; }
+
+        footer { padding: 4rem 0; text-align: center; color: var(--muted); font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <span class="badge">CYBERSECURITY LAB: PHISHING</span>
+        <h1>Anatomía de un Ataque y Respuesta ante Incidentes</h1>
+        <p style="color: var(--muted); margin-top: 1rem;">Guía técnica para detectar, analizar y mitigar amenazas de ingeniería social por <strong>Jose Ignacio Navarro</strong>.</p>
+    </div>
+</header>
+
+<div class="container">
+    
+    <section>
+        <h2>01. ¿Qué es el Phishing y cómo muta?</h2>
+        <p>El phishing no es solo un correo falso; es un ecosistema de engaño diseñado para saltarse las barreras tecnológicas atacando el eslabón más débil: el humano.</p>
+        <div class="step-card" style="margin-top: 2rem;">
+            <h3>Principales Variantes</h3>
+            <ul style="list-style: none; padding-left: 0;">
+                <li style="margin-bottom: 1rem;"><strong>🎯 Spear Phishing:</strong> Ataques personalizados contra un individuo específico tras una fase de reconocimiento.</li>
+                <li style="margin-bottom: 1rem;"><strong>👑 Whaling:</strong> Dirigido a "peces gordos" (CEOs/Directivos) para autorizar transferencias o robar datos confidenciales.</li>
+                <li style="margin-bottom: 1rem;"><strong>📱 Smishing:</strong> Phishing vía SMS, muy común para robar códigos de verificación (2FA).</li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <h2>02. Vectores de Infección</h2>
+        <p>¿Cómo llega el código malicioso a tu máquina? Estos son los métodos paso a paso:</p>
+        
+        <div class="step-card">
+            <div class="step-header"><div class="num">1</div><h3>El Enlace Malicioso</h3></div>
+            <p>Páginas clonadas de Microsoft 365 o bancos. El objetivo es que introduzcas tus credenciales voluntariamente.</p>
+        </div>
+
+        <div class="step-card">
+            <div class="step-header"><div class="num">2</div><h3>Adjuntos "Armados"</h3></div>
+            <p>Documentos Word/Excel con <strong>Macros</strong> ocultas o archivos comprimidos (.ZIP/.ISO) que al abrirse ejecutan un script en segundo plano.</p>
+        </div>
+    </section>
+
+    <section>
+        <h2>03. Escenario Real: ¿Cómo detectarlo?</h2>
+        <table class="compare-table">
+            <thead>
+                <tr>
+                    <th>Elemento</th>
+                    <th>Señal de Alerta (Phishing)</th>
+                    <th>Estado Seguro</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Remitente</td>
+                    <td style="color: var(--accent);">soporte-tecnico@microsoft-security.net</td>
+                    <td style="color: var(--success);">no-reply@microsoft.com</td>
+                </tr>
+                <tr>
+                    <td>Enlaces (Hover)</td>
+                    <td style="color: var(--accent);">bit.ly/update-pass-321</td>
+                    <td style="color: var(--success);">https://portal.office.com/...</td>
+                </tr>
+                <tr>
+                    <td>Lenguaje</td>
+                    <td>Urgencia extrema y amenazas de cierre de cuenta.</td>
+                    <td>Informativo y profesional.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>04. Respuesta ante Incidentes: Análisis de Logs</h2>
+        <p>Si sospechamos de una infección, el sistema siempre deja rastro. Así es como buscamos pruebas:</p>
+
+        <h3>A. Buscando procesos sin firma o sospechosos</h3>
+        <pre><code># Listar procesos que no tienen descripción (típico de malware)
+Get-Process | Where-Object {$_.Description -eq ""} | Select-Object Name, Id, Path</code></pre>
+
+        <h3>B. Auditoría de Eventos de Windows (Event Viewer)</h3>
+        <p>Debemos buscar estos Event IDs específicos:</p>
+        <ul>
+            <li><strong>ID 4624:</strong> Inicios de sesión (Logon). Buscar horas inusuales.</li>
+            <li><strong>ID 4688:</strong> Nuevo proceso creado. Vital para ver si Word lanzó un PowerShell.</li>
+        </ul>
+        <pre><code># Buscar ejecuciones sospechosas en los últimos logs
+Get-WinEvent -FilterHashtable @{LogName='Security';Id=4688} | Select-Object -First 10</code></pre>
+        <span class="log-note">⚠️ Nota: Requiere tener activada la política de auditoría de creación de procesos.</span>
+    </section>
+
+    <section>
+        <h2>05. Plan de Recuperación Post-Infección</h2>
+        <div class="step-card" style="border-left: 5px solid var(--success);">
+            <h3>Protocolo de 3 Pasos</h3>
+            <p><strong>1. Aislamiento:</strong> Desconectar de la red inmediatamente para evitar el movimiento lateral (que el virus infecte a otros PCs del dominio).</p>
+            <p><strong>2. Limpieza de Persistencia:</strong> Revisar llaves de registro donde el malware suele esconderse para re-iniciarse:</p>
+            <pre><code>reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Run"</code></pre>
+            <p><strong>3. Erradicación y Reset:</strong> Formateo de equipo si es necesario y cambio forzado de contraseñas de todos los servicios afectados.</p>
+        </div>
+    </section>
+
+</div>
+
+<footer>
+    <div class="container">
+        <p>© 2026 Jose Ignacio Navarro | <span style="color: var(--accent2);">Analista de Ciberseguridad</span></p>
+    </div>
+</footer>
+
+</body>
+</html>
